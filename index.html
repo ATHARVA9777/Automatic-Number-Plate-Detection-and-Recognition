@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Plate Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        input[type="file"] {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Number Plate Detection</h1>
+    <form id="upload-form" method="POST" enctype="multipart/form-data">
+        <label for="video-upload">Upload a video file:</label>
+        <input type="file" id="video-upload" name="video" accept="video/*" required><br>
+        <button type="submit">Process Video</button>
+    </form>
+    <div class="output" id="output"></div>
+    <script>
+        const form = document.getElementById("upload-form");
+        const outputDiv = document.getElementById("output");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+
+            outputDiv.innerHTML = "Processing video... Please wait.";
+
+            const response = await fetch("/process", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                outputDiv.innerHTML = `<h2>Detected Text:</h2><ul>${result.texts
+                    .map(text => `<li>${text}</li>`)
+                    .join("")}</ul>`;
+            } else {
+                outputDiv.innerHTML = `<p>Error: ${result.error}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
